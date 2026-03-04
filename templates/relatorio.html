@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Relatório Semanal</h2>
+<form method="POST" class="mb-4">
+    <div class="row g-2 align-items-end">
+        <div class="col-auto">
+            <label class="form-label">Início da semana (segunda)</label>
+            <input type="date" name="start_date" class="form-control" value="{{ start_date }}" required>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary">Gerar</button>
+        </div>
+    </div>
+</form>
+
+{% if entries %}
+<h3>Agendamentos de {{ start_date }} a {{ end_date }}</h3>
+<table class="table table-striped">
+    <thead><tr><th>Data</th><th>Turno</th><th>Aula</th><th>Professor</th><th>Disciplina</th><th>Conteúdo</th></tr></thead>
+    <tbody>
+        {% for id,prof,disc,data,turno,periodo,conteudo in entries %}
+        <tr>
+            <td>{{ data }}</td>
+            <td>{{ turno }}</td>
+            <td>{{ periodo }}ª</td>
+            <td>{{ prof }}</td>
+            <td>{{ disc }}</td>
+            <td>{{ conteudo }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h4>Estatísticas</h4>
+<p><strong>Disciplinas mais usadas:</strong></p>
+<ul>
+    {% for nome,count in disc_stats %}
+    <li>{{ nome }} - {{ count }} aulas</li>
+    {% endfor %}
+</ul>
+<p><strong>Agendamentos por turno:</strong></p>
+<ul>
+    {% for turno,count in turno_stats %}
+    <li>{{ turno }} - {{ count }}</li>
+    {% endfor %}
+</ul>
+<p><strong>Professores mais agendados:</strong></p>
+<ul>
+    {% for nome,count in prof_stats %}
+    <li>{{ nome }} - {{ count }} aulas</li>
+    {% endfor %}
+</ul>
+
+{% endif %}
+{% endblock %}

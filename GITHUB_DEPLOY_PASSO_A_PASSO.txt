@@ -1,0 +1,246 @@
+# 📝 Guia Passo a Passo - GitHub + Deploy
+
+## **PASSO 1: Criar Repositório no GitHub**
+
+### 1.1 - Go to GitHub
+- Abra https://github.com
+- Você já está logado ✓
+
+### 1.2 - Criar novo repositório
+- Clique no **ícone "+"** no canto superior direito
+- Selecione **"New repository"**
+
+### 1.3 - Configurar Repositório
+Preencha assim:
+
+| Campo | Valor |
+|-------|-------|
+| **Repository name** | `sistema-escolar` |
+| **Description** | `Sistema de Agendamento de Aulas` |
+| **Public/Private** | `Public` (para link funcionar) |
+| **.gitignore** | `Python` |
+| **License** | Deixe em branco |
+
+**NÃO** marque "Add README.md" ou qualquer outra opção!
+
+### 1.4 - Criar Repositório
+- Clique em **"Create repository"**
+
+Você verá uma página com:
+```
+Quick setup — if you've done this kind of thing before
+https://github.com/SEUSUSARIO/sistema-escolar.git
+```
+
+**Copie essa URL!** Você vai precisar dela.
+
+---
+
+## **PASSO 2: GitHub Desktop (Opção MAIS FÁCIL)**
+
+Se quer evitar linha de comando, use GitHub Desktop (interface visual):
+
+### 2.1 - Instalar GitHub Desktop
+- Baixe: https://desktop.github.com
+- Instale normalmente
+
+### 2.2 - Clonar Repositório
+- Abra GitHub Desktop
+- Clique "File" → "Clone repository"
+- Selecione `seu-usuario/sistema-escolar`
+- Escolha pasta para clonar (ex: `C:\Desenvolvimento`)
+
+### 2.3 - Copiar Arquivos
+- Navigate até `C:\Desenvolvimento\sistema-escolar`
+- Copie **TODOS** os arquivos de `c:\Users\Professor\sistema_escolar` para dentro dessa pasta
+  - `app.py`
+  - `wsgi.py`
+  - `requirements.txt`
+  - `templates/`
+  - `database.db` (opcional, mas recomendado)
+  - `.gitignore`
+
+### 2.4 - Fazer Commit e Push
+No GitHub Desktop:
+1. Você verá todos os arquivos em "Changes"
+2. Na caixa "Summary", escreva: `Initial commit - Sistema de Agendamento`
+3. Clique "Commit to main"
+4. Clique "Publish branch"
+
+**Pronto!** Seus arquivos estão no GitHub! 🎉
+
+---
+
+## **PASSO 3: Linha de Comando (Alternativa)**
+
+Se preferir ou GitHub Desktop não funcionar, use PowerShell:
+
+### 3.1 - Abrir PowerShell
+- Clique em Start
+- Digite "PowerShell"
+- Clique em "Windows PowerShell"
+
+### 3.2 - Ir para pasta do projeto
+```powershell
+cd "c:\Users\Professor\sistema_escolar"
+```
+
+### 3.3 - Configurar Git (primeira vez apenas)
+```powershell
+git config --global user.name "Seu Nome"
+git config --global user.email seu@email.com
+```
+
+### 3.4 - Inicializar repositório local
+```powershell
+git init
+git add .
+git commit -m "Initial commit - Sistema de Agendamento"
+```
+
+### 3.5 - Conectar ao GitHub
+**Substitua `SEU_USUARIO` pelo seu usuário GitHub!**
+
+```powershell
+git remote add origin https://github.com/SEU_USUARIO/sistema-escolar.git
+git branch -M main
+git push -u origin main
+```
+
+Se pedir senha, use seu **Personal Access Token** (não a senha da conta):
+
+#### Como gerar Token:
+1. GitHub → Settings (avatar canto superior direito)
+2. Developer settings (final da esquerda)
+3. Personal access tokens → Tokens (classic)
+4. Generate new token
+5. Selecione `repo` (checkbox)
+6. Generate token
+7. **Copie** (aparece uma só vez!)
+8. Cole no PowerShell quando pedir
+
+---
+
+## **PASSO 4: Verificar se Funcionou**
+
+### 4.1 - Verificar no GitHub
+- Abra https://github.com/SEU_USUARIO/sistema-escolar
+- Você deve ver todos seus arquivos lá!
+
+### 4.2 - Exemplo do que vai aparecer
+```
+sistema-escolar
+├── templates/
+│   ├── index.html
+│   ├── login.html
+│   ├── agendar.html
+│   └── ...
+├── app.py
+├── wsgi.py
+├── requirements.txt
+├── database.db
+└── .gitignore
+```
+
+**Se chegou até aqui, parabéns! ✓**
+
+---
+
+## **PASSO 5: Deploy no Render**
+
+### 5.1 - Acesse Render
+- Vá para https://render.com
+- Clique "Sign Up"
+- Clique "Continue with GitHub"
+
+### 5.2 - Autorizar
+- Clique "Authorize Render"
+- Deixe selecionado "All repositories"
+- Clique "Install"
+
+### 5.3 - Criar Web Service
+- Volte para Render
+- Clique "New +" → "Web Service"
+- Selecione `seu-usuario/sistema-escolar`
+- Clique "Connect"
+
+### 5.4 - Configurar Serviço
+Preencha assim:
+
+| Campo | Valor |
+|-------|-------|
+| **Name** | `sistema-escolar` |
+| **Environment** | `Python 3` |
+| **Budget** | `$0.10 (Starter)` ou `Free` |
+| **Build Command** | `pip install -r requirements.txt` |
+| **Start Command** | `gunicorn wsgi:app` |
+
+### 5.5 - Deploy
+- Clique "Create Web Service"
+- Render começa o deploy (vira azul depois verde)
+- Aguarde 2-3 minutos
+
+### 5.6 - Copiar Link
+Quando terminar (aparecer ✓ verde):
+- Clique no link em cima (tipo `sistema-escolar-xxxx.onrender.com`)
+- **Este é seu link para compartilhar!**
+
+---
+
+## **🎉 PRONTO!**
+
+### Links Finais:
+
+**Para Professores (compartilhe este):**
+```
+https://sistema-escolar-xxxx.onrender.com
+```
+
+**Para Admin (você usa):**
+```
+https://sistema-escolar-xxxx.onrender.com/login
+Usuário: admin
+Senha: Dotti2826
+```
+
+---
+
+## **⚠️ Problemas Comuns**
+
+### **"Erro de autenticação no Git"**
+- Use Personal Access Token (veja passo 3.5)
+- Não use a senha da conta
+
+### **"ModuleNotFoundError" no Render**
+- Verifique se `requirements.txt` tem conteúdo:
+  ```
+  Flask==3.0.0
+  Werkzeug==3.0.1
+  gunicorn==21.2.0
+  ```
+
+### **"Start Command failed"**
+- Verifique se `wsgi.py` existe
+
+### **Render diz "Public URL"**
+- Clique nele uma vez para testar
+- Irá abrir seu site!
+
+---
+
+## **Próximas Mudanças (Opcional)**
+
+Se quiser fazer mudanças depois:
+
+1. Edite os arquivos localmente
+2. No PowerShell:
+   ```powershell
+   git add .
+   git commit -m "Descrição da mudança"
+   git push
+   ```
+3. Render detecta e refaz deploy automaticamente! 🔄
+
+---
+
+**Precisa de ajuda em algum passo? Diga qual! 😊**

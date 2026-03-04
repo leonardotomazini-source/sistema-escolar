@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Professores</h2>
+<form method="POST" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="nome" class="form-control" placeholder="Nome do professor" required>
+        <button class="btn btn-outline-primary" type="submit">Adicionar</button>
+    </div>
+</form>
+<ul class="list-group">
+    {% for id,name in professores %}
+        <li class="list-group-item">{{ name }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

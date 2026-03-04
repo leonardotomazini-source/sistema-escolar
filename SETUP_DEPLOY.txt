@@ -1,0 +1,107 @@
+# 🚀 Deploy Rápido (5 minutos)
+
+## **OPÇÃO MAIS FÁCIL: Render.com**
+
+### Passo 1: Criar Repositório GitHub
+```bash
+cd c:\Users\Professor\sistema_escolar
+git init
+git add .
+git commit -m "Sistema de Agendamento Escolar"
+```
+
+Depois crie um repositório vazio em https://github.com/new e execute:
+```bash
+git remote add origin https://github.com/SEU_USUARIO/sistema_escolar.git
+git branch -M main
+git push -u origin main
+```
+
+### Passo 2: Deploy no Render
+1. Acesse https://render.com
+2. Clique em "Sign Up" (use GitHub para mais fácil)
+3. Clique em "New +" → "Web Service"
+4. Conecte seu repositório `sistema_escolar`
+5. Configure assim:
+   - **Name:** `sistema-escolar` (ou difícil em outro projeto)
+   - **environment:** Python 3
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `gunicorn wsgi:app`
+6. Clique "Create Web Service"
+7. **Pronto! Aguarde 2-3 minutos**
+
+Você receberá uma URL tipo: `https://sistema-escolar-xxxx.onrender.com` 🎉
+
+---
+
+## **Compartilhar com Professores**
+
+Envie esse link:
+```
+https://sistema-escolar-xxxx.onrender.com
+```
+
+Eles podem:
+✅ Agendar aulas
+✅ Ver agenda semanal
+✅ Sem login necessário
+
+---
+
+## **Login Admin**
+
+Você acessa em:
+```
+https://sistema-escolar-xxxx.onrender.com/login
+```
+
+Credenciais:
+- **Usuário:** `admin`
+- **Senha:** `Dotti2826`
+
+---
+
+## **Alternativas (se Render não funcionar)**
+
+### Railway.app (Super fácil)
+1. Acesse https://railway.app
+2. Clique "Start New Project"
+3. "Deploy from GitHub"
+4. Selecione seu repositório
+5. **Pronto!**
+
+### Replit (Grátis, sem GitHub)
+1. Acesse https://replit.com
+2. Clique "Create Repl"
+3. Selecione "Import from GitHub" ou upload manual
+4. Clique "Run"
+5. **Pronto!**
+
+---
+
+## **Dúvidas Comuns**
+
+**P: E se eu modificar o código depois?**
+R: Se usar GitHub, é automático - a cada `git push`, o Render redeploya.
+
+**P: Os dados dos professores ficam salvos?**
+R: Sim! O banco de dados SQLite persiste entre redeployments.
+
+**P: Quanto custa?**
+A: Render: Grátis no free tier. Railway: $5 créditos grátis/mês.
+
+**P: Como adiciono mais professores/disciplinas?**
+R: Login em `/login` com `admin:Dotti2826` e gerencia tudo!
+
+---
+
+## **Suporte Render**
+
+Problemas comuns:
+- **Build falha:** Verifique se `requirements.txt` existe ✓
+- **Application error:** Verifique `wsgi.py` ✓
+- **Port issues:** Render detecta automaticamente
+
+Documentação: https://render.com/docs
+
+**Boa sorte! 🎊**

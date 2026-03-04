@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Agendar Aula</h2>
+<form method="POST">
+    <div class="mb-3">
+        <label class="form-label">Professor</label>
+        <select name="professor" class="form-select" required>
+            <option value="">-- selecione --</option>
+            {% for id,name in professores %}
+                <option value="{{ id }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Disciplina</label>
+        <select name="disciplina" class="form-select" required>
+            <option value="">-- selecione --</option>
+            {% for id,name in disciplinas %}
+                <option value="{{ id }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Data</label>
+        <input type="date" name="data" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Turno</label>
+        <select name="turno" class="form-select" required>
+            <option value="matutino">Matutino</option>
+            <option value="vespertino">Vespertino</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Aula (período)</label>
+        <select name="periodo" class="form-select" required>
+            <option value="1">1ª aula</option>
+            <option value="2">2ª aula</option>
+            <option value="3">3ª aula</option>
+            <option value="4">4ª aula</option>
+            <option value="5">5ª aula</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Conteúdo (habilidades/competências)</label>
+        <textarea name="conteudo" class="form-control" rows="3" required></textarea>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Agendar</button>
+</form>
+{% endblock %}

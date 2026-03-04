@@ -1,0 +1,114 @@
+╔════════════════════════════════════════════════════════════════╗
+║           GITHUB + DEPLOY RESUMIDO (VÃO RÁPIDO)              ║
+╚════════════════════════════════════════════════════════════════╝
+
+📌 OPÇÃO 1: GitHub Desktop (MAIS FÁCIL) ✨
+════════════════════════════════════════════════════════════════
+
+✅ PASSO 1: Baixar GitHub Desktop
+   → https://desktop.github.com
+   → Instale normalmente
+
+✅ PASSO 2: Criar repositório no GitHub WEB
+   → https://github.com/new
+   → Nome: "sistema-escolar"
+   → Public
+   → Clique "Create repository"
+
+✅ PASSO 3: Clonar no GitHub Desktop
+   → Abra GitHub Desktop
+   → File → Clone Repository
+   → Selecione "seu-usuario/sistema-escolar"
+   → Escolha pasta (ex: C:\Dev)
+
+✅ PASSO 4: Copiar seus arquivos
+   → Copie TODOS de: c:\Users\Professor\sistema_escolar
+   → Para: C:\Dev\sistema-escolar
+   
+   Arquivos importantes:
+   ✓ app.py
+   ✓ wsgi.py
+   ✓ requirements.txt
+   ✓ templates/ (pasta inteira)
+   ✓ database.db
+   ✓ .gitignore
+
+✅ PASSO 5: Commit no GitHub Desktop
+   → Você verá mudanças à esquerda
+   → Em "Summary" escreva: "Initial commit"
+   → Clique "Commit to main"
+   → Clique "Publish branch"
+
+✅ PASSO 6: Verificar
+   → Abra: https://github.com/seu-usuario/sistema-escolar
+   → Você deve ver seus arquivos lá! 🎉
+
+════════════════════════════════════════════════════════════════
+
+📌 OPÇÃO 2: PowerShell (sem interface)
+════════════════════════════════════════════════════════════════
+
+1. Abra PowerShell em: c:\Users\Professor\sistema_escolar
+
+2. Execute cada linha (uma por vez):
+
+   git config --global user.name "Seu Nome"
+   git config --global user.email seu@email.com
+
+3. Inicialize:
+
+   git init
+   git add .
+   git commit -m "Initial commit"
+
+4. Conecte ao GitHub (SUBSTITUA seu-usuario):
+
+   git remote add origin https://github.com/seu-usuario/sistema-escolar.git
+   git branch -M main
+   git push -u origin main
+
+5. Quando pedir senha, use Personal Access Token:
+   → GitHub → Settings → Developer settings
+   → Personal access tokens → Generate new token
+   → Selecione "repo"
+   → Copie e cole no PowerShell
+
+════════════════════════════════════════════════════════════════
+
+🚀 DEPLOY NO RENDER (5 MINUTOS)
+════════════════════════════════════════════════════════════════
+
+1. Acesse: https://render.com
+2. Sign Up com GitHub
+3. Autorize o acesso
+4. Clique "New +" → "Web Service"
+5. Selecione "sistema-escolar" (seu repositório)
+6. Clique "Connect"
+
+7. Configure assim:
+   ┌─────────────────────────────────────┐
+   │ Name: sistema-escolar               │
+   │ Environment: Python 3               │
+   │ Build: pip install -r requirements  │
+   │ Start: gunicorn wsgi:app            │
+   └─────────────────────────────────────┘
+
+8. Clique "Create Web Service"
+9. Aguarde 2-3 minutos (ficará azul → verde)
+10. Clique no link gerado!
+
+════════════════════════════════════════════════════════════════
+
+✅ PRONTO!
+
+Seu site estará em: https://sistema-escolar-XXXX.onrender.com
+
+🎓 Compartilhe com professores:
+   https://sistema-escolar-XXXX.onrender.com
+
+🔐 Login admin:
+   URL: https://sistema-escolar-XXXX.onrender.com/login
+   Usuário: admin
+   Senha: Dotti2826
+
+════════════════════════════════════════════════════════════════

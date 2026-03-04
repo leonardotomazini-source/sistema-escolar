@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Agenda Semanal</h2>
+
+{% for chave_semana, semana in semanas.items() %}
+    <h4 class="mt-4">Semana de {{ semana.segunda.strftime('%d/%m/%Y') }} a {{ semana.sexta.strftime('%d/%m/%Y') }}</h4>
+    
+    {% if semana.aulas %}
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Data</th>
+                    <th>Turno</th>
+                    <th>Aula</th>
+                    <th>Professor</th>
+                    <th>Disciplina</th>
+                    <th>Conteúdo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aula in semana.aulas %}
+                    {% if aula.cor == "success" %}
+                        <tr class="table-success">
+                    {% elif aula.cor == "info" %}
+                        <tr class="table-info">
+                    {% else %}
+                        <tr>
+                    {% endif %}
+                        <td>{{ aula.data }}</td>
+                        <td>{{ aula.turno }}</td>
+                        <td>{{ aula.periodo }}ª</td>
+                        <td>{{ aula.prof }}</td>
+                        <td>{{ aula.disc }}</td>
+                        <td>{{ aula.conteudo }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <p class="alert alert-warning">Nenhuma aula agendada para esta semana.</p>
+    {% endif %}
+{% endfor %}
+
+{% if not semanas %}
+    <p class="alert alert-info">Nenhuma aula agendada.</p>
+{% endif %}
+
+<div class="mt-4">
+    <small class="text-muted">
+        <span class="badge bg-success">Verde = Hoje</span>
+        <span class="badge bg-info">Azul = Próximos dias</span>
+    </small>
+</div>
+{% endblock %}
