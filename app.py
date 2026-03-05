@@ -26,7 +26,7 @@ def conectar():
     """Conecta ao banco de dados com caminho absoluto"""
     db_path = os.environ.get("DATABASE_PATH")
     if not db_path:
-        db_path = "/tmp/database.db"
+        db_path = os.path.join(os.path.dirname(__file__), "database.db")
     return sqlite3.connect(db_path)
 
 # Criar banco se não existir
