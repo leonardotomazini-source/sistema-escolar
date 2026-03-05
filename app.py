@@ -151,6 +151,11 @@ def logout():
     flash("Logout realizado", "success")
     return redirect(url_for("index"))
 
+@app.route("/")
+def index():
+    """Página inicial"""
+    return render_template("index.html")
+
 @app.route("/debug")
 def debug():
     """Endpoint de debug para verificar estado do sistema"""
