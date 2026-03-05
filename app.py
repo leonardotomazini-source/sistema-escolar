@@ -23,21 +23,9 @@ def requer_admin(f):
     return decorated_function
 
 def conectar():
-    """Abstrai a conexão com SQLite ou PostgreSQL.
-    - Se DATABASE_URL começar com "postgres", usa psycopg2.
-    - Caso contrário, usa um arquivo SQLite (DATABASE_PATH ou ./database.db).
-
-    No Render gratuito não há disco persistente, então o ideal é criar um
-    banco PostgreSQL gratuito (Render Postgres) e fornecer a URL via
-    DATABASE_URL. Uma vez configurado, dados e agendamentos persistirão para
-    sempre. """
-    # PostgreSQL via variáveis de ambiente
-    db_url = os.environ.get("DATABASE_URL")
-    if db_url and db_url.startswith("postgres"):
-        import psycopg2
-        return psycopg2.connect(db_url)
-
-    # SQLite fallback
+    """Conecta ao banco de dados SQLite.
+    Use DATABASE_PATH para configurar local persistente (ex: /persistent/database.db no Render).
+    """
     db_path = os.environ.get("DATABASE_PATH")
     if not db_path:
         db_path = os.path.join(os.path.dirname(__file__), "database.db")
@@ -198,9 +186,10 @@ def debug():
 
         return f"""
         <h1>Debug Sistema Escolar v2.3</h1>
-        <p>🚀 App inicializado com sucesso!</p>
+        <p>App inicializado com sucesso!</p>
         <h2>Banco de Dados:</h2>
         <ul>
+            <li>Tipo: SQLite</li>
             <li>Tabelas: {', '.join(tables)}</li>
             <li>Professores: {prof_count}</li>
             <li>Disciplinas: {disc_count}</li>
@@ -208,7 +197,7 @@ def debug():
         </ul>
         <h2>Variáveis de Ambiente:</h2>
         <ul>
-            <li>DATABASE_PATH: {os.environ.get('DATABASE_PATH', 'None')}</li>
+            <li>DATABASE_PATH: {os.environ.get('DATABASE_PATH', 'Use padrao: ./database.db')}</li>
             <li>DB file exists: {os.path.exists(os.environ.get('DATABASE_PATH','') or os.path.join(os.path.dirname(__file__), 'database.db'))}</li>
             <li>Current dir: {os.getcwd()}</li>
         </ul>
