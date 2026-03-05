@@ -8,8 +8,6 @@ from functools import wraps
 app = Flask(__name__)
 app.secret_key = "chave-super-secretar-escola"  # necessário para flash messages
 
-print("🚀 SISTEMA ESCOLAR v2.2 - INICIANDO...")  # DEBUG: confirmar versão no Render
-
 # Credenciais admin
 ADMIN_USER = "admin"
 ADMIN_PASS = "Dotti2826"
@@ -43,7 +41,17 @@ def criar_banco():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL UNIQUE
     )
-    """)
+    """
+    )
+
+    # tabela de disciplinas
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS disciplinas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL UNIQUE
+    )
+    """
+    )
 
     # tabela de turmas
     cursor.execute("""
