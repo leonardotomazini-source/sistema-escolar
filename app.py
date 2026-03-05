@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import sqlite3
 import os
+import traceback
 from datetime import datetime, timedelta
 from functools import wraps
 
@@ -143,9 +144,48 @@ def logout():
     flash("Logout realizado", "success")
     return redirect(url_for("index"))
 
-@app.route("/")
-def index():
-    return render_template("index.html")
+@app.route("/debug")
+def debug():
+    """Endpoint de debug para verificar estado do sistema"""
+    try:
+        conn = conectar()
+        cursor = conn.cursor()
+
+        # Verificar tabelas
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        tables = [row[0] for row in cursor.fetchall()]
+
+        # Verificar dados
+        cursor.execute("SELECT COUNT(*) FROM professores")
+        prof_count = cursor.fetchone()[0]
+
+        cursor.execute("SELECT COUNT(*) FROM disciplinas")
+        disc_count = cursor.fetchone()[0]
+
+        cursor.execute("SELECT COUNT(*) FROM turmas")
+        turma_count = cursor.fetchone()[0]
+
+        conn.close()
+
+        return f"""
+        <h1>Debug Sistema Escolar v2.3</h1>
+        <p>🚀 App inicializado com sucesso!</p>
+        <h2>Banco de Dados:</h2>
+        <ul>
+            <li>Tabelas: {', '.join(tables)}</li>
+            <li>Professores: {prof_count}</li>
+            <li>Disciplinas: {disc_count}</li>
+            <li>Turmas: {turma_count}</li>
+        </ul>
+        <h2>Variáveis de Ambiente:</h2>
+        <ul>
+            <li>DATABASE_PATH: {os.environ.get('DATABASE_PATH', 'None')}</li>
+            <li>Current dir: {os.getcwd()}</li>
+        </ul>
+        """
+
+    except Exception as e:
+        return f"<h1>Erro no Debug</h1><p>{str(e)}</p><pre>{traceback.format_exc()}</pre>"
 
 @app.route("/agendar", methods=["GET", "POST"])
 def agendar():
