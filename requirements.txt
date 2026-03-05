@@ -1,4 +1,5 @@
 Flask==3.0.0
 Werkzeug==3.0.1
 gunicorn==21.2.0
-# Force rebuild v2.3
+psycopg2-binary==2.9.10
+# Required for PostgreSQL support on Render

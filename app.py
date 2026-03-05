@@ -23,9 +23,24 @@ def requer_admin(f):
     return decorated_function
 
 def conectar():
-    """Conecta ao banco de dados SQLite.
-    Use DATABASE_PATH para configurar local persistente (ex: /persistent/database.db no Render).
+    """Conecta ao banco de dados.
+    - Se DATABASE_URL está definida (Render PostgreSQL), usa psycopg2.
+    - Caso contrário, usa SQLite local (database.db).
     """
+    db_url = os.environ.get("DATABASE_URL")
+    
+    if db_url:
+        # PostgreSQL (usado no Render com banco persistente)
+        try:
+            import psycopg2
+            conn = psycopg2.connect(db_url)
+            # Retorna cursor com formato de dicionário para compatibilidade
+            return conn
+        except ImportError:
+            print("psycopg2 não instalado. Usando SQLite fallback.")
+            pass
+    
+    # SQLite (desenvolvimento local)
     db_path = os.environ.get("DATABASE_PATH")
     if not db_path:
         db_path = os.path.join(os.path.dirname(__file__), "database.db")
@@ -80,19 +95,23 @@ def criar_banco():
     )
     """)
 
-    # caso a tabela já exista em formato antigo, adicionamos colunas necessárias
-    cursor.execute("PRAGMA table_info(agendamentos)")
-    existing = [row[1] for row in cursor.fetchall()]
-    if "disciplina_id" not in existing:
-        cursor.execute("ALTER TABLE agendamentos ADD COLUMN disciplina_id INTEGER NOT NULL DEFAULT 0")
-    if "turma_id" not in existing:
-        cursor.execute("ALTER TABLE agendamentos ADD COLUMN turma_id INTEGER NOT NULL DEFAULT 0")
-    if "turno" not in existing:
-        cursor.execute("ALTER TABLE agendamentos ADD COLUMN turno TEXT NOT NULL DEFAULT 'matutino'")
-    if "periodo" not in existing:
-        cursor.execute("ALTER TABLE agendamentos ADD COLUMN periodo INTEGER NOT NULL DEFAULT 1")
-    if "conteudo" not in existing:
-        cursor.execute("ALTER TABLE agendamentos ADD COLUMN conteudo TEXT NOT NULL DEFAULT ''")
+    # caso a tabela já exista em formato antigo, adicionamos colunas necessárias (SQLite apenas)
+    try:
+        cursor.execute("PRAGMA table_info(agendamentos)")
+        existing = [row[1] for row in cursor.fetchall()]
+        if "disciplina_id" not in existing:
+            cursor.execute("ALTER TABLE agendamentos ADD COLUMN disciplina_id INTEGER NOT NULL DEFAULT 0")
+        if "turma_id" not in existing:
+            cursor.execute("ALTER TABLE agendamentos ADD COLUMN turma_id INTEGER NOT NULL DEFAULT 0")
+        if "turno" not in existing:
+            cursor.execute("ALTER TABLE agendamentos ADD COLUMN turno TEXT NOT NULL DEFAULT 'matutino'")
+        if "periodo" not in existing:
+            cursor.execute("ALTER TABLE agendamentos ADD COLUMN periodo INTEGER NOT NULL DEFAULT 1")
+        if "conteudo" not in existing:
+            cursor.execute("ALTER TABLE agendamentos ADD COLUMN conteudo TEXT NOT NULL DEFAULT ''")
+    except:
+        # PostgreSQL não suporta PRAGMA, mas tabelas já foram criadas assim
+        pass
 
     # Inserir dados padrão se não existirem
     cursor.execute("SELECT COUNT(*) FROM professores")
@@ -167,10 +186,20 @@ def debug():
     try:
         conn = conectar()
         cursor = conn.cursor()
-
-        # Verificar tabelas
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
-        tables = [row[0] for row in cursor.fetchall()]
+        
+        # Detectar tipo de banco
+        db_type = "PostgreSQL" if os.environ.get("DATABASE_URL") else "SQLite"
+        
+        # Diferentes queries conforme banco
+        if db_type == "PostgreSQL":
+            cursor.execute("""
+                SELECT table_name FROM information_schema.tables 
+                WHERE table_schema='public'
+            """)
+            tables = [row[0] for row in cursor.fetchall()]
+        else:
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            tables = [row[0] for row in cursor.fetchall()]
 
         # Verificar dados
         cursor.execute("SELECT COUNT(*) FROM professores")
@@ -181,25 +210,28 @@ def debug():
 
         cursor.execute("SELECT COUNT(*) FROM turmas")
         turma_count = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT COUNT(*) FROM agendamentos")
+        agend_count = cursor.fetchone()[0]
 
         conn.close()
 
         return f"""
-        <h1>Debug Sistema Escolar v2.3</h1>
+        <h1>Debug Sistema Escolar v2.5</h1>
         <p>App inicializado com sucesso!</p>
         <h2>Banco de Dados:</h2>
         <ul>
-            <li>Tipo: SQLite</li>
+            <li>Tipo: {db_type}</li>
             <li>Tabelas: {', '.join(tables)}</li>
             <li>Professores: {prof_count}</li>
             <li>Disciplinas: {disc_count}</li>
             <li>Turmas: {turma_count}</li>
+            <li>Agendamentos: {agend_count}</li>
         </ul>
         <h2>Variáveis de Ambiente:</h2>
         <ul>
-            <li>DATABASE_PATH: {os.environ.get('DATABASE_PATH', 'Use padrao: ./database.db')}</li>
-            <li>DB file exists: {os.path.exists(os.environ.get('DATABASE_PATH','') or os.path.join(os.path.dirname(__file__), 'database.db'))}</li>
-            <li>Current dir: {os.getcwd()}</li>
+            <li>DATABASE_URL: {'Configurada' if os.environ.get('DATABASE_URL') else 'Nao configurada'}</li>
+            <li>DATABASE_PATH: {os.environ.get('DATABASE_PATH', 'Nao configurada')}</li>
         </ul>
         """
 
