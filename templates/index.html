@@ -2,39 +2,8 @@
 
 {% block content %}
 <!-- versao 2.4 -->
-<div class="row">
-    {% if session.get('admin_logado') %}
-        <div class="col-12">
-            <div class="alert alert-success" role="alert">
-                <h4>✅ Bem-vindo, Admin!</h4>
-                <p>Você está com acesso total ao sistema. Use o menu acima para navegar.</p>
-            </div>
-        </div>
-    {% else %}
-        <div class="col-md-6">
-            <div class="card border-primary">
-                <div class="card-header bg-primary text-white">
-                    <h5>🔐 Administrador</h5>
-                </div>
-                <div class="card-body">
-                    <p class="card-text">Acesso completo ao sistema. Faça login para acessar gerenciamento total.</p>
-                    <a href="/login" class="btn btn-primary">Login Admin</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card border-success">
-                <div class="card-header bg-success text-white">
-                    <h5>👨‍🏫 Professores</h5>
-                </div>
-                <div class="card-body">
-                    <p class="card-text">Agende suas aulas e visualize o calendário semanal.</p>
-                    <a href="/agendar" class="btn btn-success me-2">Agendar Aula</a>
-                    <a href="/professores-agenda" class="btn btn-info">Ver Agenda</a>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+<div class="d-flex flex-column align-items-center justify-content-center" style="min-height:60vh;">
+    <a href="/agendar" class="btn btn-primary btn-lg mb-3 w-75">AGENDAR</a>
+    <a href="/professores-agenda" class="btn btn-secondary btn-lg w-75">VER AGENDA</a>
 </div>
 {% endblock %}
