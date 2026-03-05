@@ -1,0 +1,66 @@
+📱 UPLOAD VIA GITHUB DESKTOP (MAIS FÁCIL)
+
+═════════════════════════════════════════════════════════════════
+
+✅ PASSO 1: ABRA GITHUB DESKTOP
+
+✅ PASSO 2: SELECIONE SEU REPOSITÓRIO
+   - No lado esquerdo você vê "Current Repository"
+   - Clique no dropdown
+   - Selecione "sistema-escolar"
+
+✅ PASSO 3: VEJA AS MUDANÇAS
+   - Na aba "Changes" você verá:
+     • app.py (modificado)
+     • Alguns arquivos novos
+   
+✅ PASSO 4: DESCREVA O COMMIT
+   Na caixa "Summary" escreva:
+   
+   "Fix: caminhos absolutos no database e melhorias"
+
+✅ PASSO 5: CONFIRME
+   Clique em "Commit to main"
+
+✅ PASSO 6: ENVIE
+   Clique em "Push origin"
+   
+   Deve aparecer uma mensagem: "Successfully pushed to origin"
+
+✅ PASSO 7: PRONTO!
+   Render vai detectar e fazer redeploy em ~2-3 minutos
+
+═════════════════════════════════════════════════════════════════
+
+COMO VERIFICAR SE FUNCIONOU:
+
+1. Abra seu dashboard do Render:
+   https://dashboard.render.com
+
+2. Clique em "sistema-escolar"
+
+3. Espere ficar verde (✓ Deploy Successful)
+
+4. Clique no link do seu site:
+   https://sistema-escolar-2q3l.onrender.com
+
+5. Teste:
+   ✅ Clique "Agendar Aula"
+   ✅ Deve carregar SEM ERRO
+   ✅ Clique "Login Admin" (teste também)
+
+═════════════════════════════════════════════════════════════════
+
+SE AINDA NÃO FUNCIONAR:
+
+Vá para GitHub Desktop:
+- Clique naquela seta ↓ perto do seu repositório
+- "Show in Explorer"
+- Abra na pasta
+
+Verifique se estes arquivos existem e estão editados:
+✓ app.py (deve ter "import os" no topo)
+✓ wsgi.py
+✓ requirements.txt
+
+═════════════════════════════════════════════════════════════════

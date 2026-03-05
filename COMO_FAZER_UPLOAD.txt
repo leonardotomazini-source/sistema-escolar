@@ -1,0 +1,88 @@
+📝 MANUAL DE UPLOAD - CORREÇÃO DO SITE
+
+As mudanças já foram feitas no seu app.py:
+✅ Caminho absoluto para banco de dados
+✅ Inserção automática de professor/disciplina
+
+AGORA FAÇA ISSO (Passo a Passo):
+
+═══════════════════════════════════════════════════════════════
+
+1️⃣ ABRA PowerShell (novo, limpo)
+   - Clique em Start
+   - Digite PowerShell
+   - Clique em Windows PowerShell
+
+2️⃣ NAVEGUE ATÉ A PASTA
+   
+   cd c:\Users\Professor\sistema_escolar
+
+3️⃣ MATE PYTHON SE ESTIVER RODANDO
+   
+   Get-Process python | Stop-Process -Force
+
+4️⃣ VERIFICAR MUDANÇAS
+   
+   git status
+   
+   Deve aparecer:
+   - modified: app.py
+   - new file: debug_test.py
+   - new file: git_deploy.py
+   - new file: deploy_fix.bat
+   etc
+
+5️⃣ ADICIONE TUDO
+   
+   git add .
+
+6️⃣ FAÇA COMMIT
+   
+   git commit -m "Fix: caminhos absolutos no database"
+
+7️⃣ ENVIE PARA GITHUB
+   
+   git push origin main
+   
+   (Se pedir credenciais, use seu Personal Access Token - veja GITHUB_DEPLOY_PASSO_A_PASSO.txt)
+
+8️⃣ AGUARDE 3-5 MINUTOS
+   
+   → Render vai detectar o push
+   → Vai fazer rebuild automaticamente
+   → Quando ficar VERDE está pronto
+
+9️⃣ TESTE SEU SITE
+   
+   Abra: https://sistema-escolar-2q3l.onrender.com
+   
+   Deve carregar a página inicial normalmente
+   
+   Clique em "Agendar Aula" - NÃO DEVE DAR ERRO
+
+═══════════════════════════════════════════════════════════════
+
+SE AINDA TIVER ERRO:
+
+1. Vá para: https://dashboard.render.com
+2. Clique em seu serviço "sistema-escolar"
+3. Aba "Logs"
+4. COPIE a mensagem de erro
+5. Me mande exatamente qual é a mensagem
+
+═══════════════════════════════════════════════════════════════
+
+DÚVIDAS COMANDOS GIT:
+
+❓ "git: command not found"
+  → Git não está instalado. Baixe em: https://git-scm.com
+
+❓ "fatal: not a valid git repository"
+  → Você não está na pasta certa. Confirme que está em:
+    c:\Users\Professor\sistema_escolar
+
+❓ "Authentication failed"
+  → Use Personal Access Token (não a senha)
+  → Veja: GITHUB_DEPLOY_PASSO_A_PASSO.txt (seção 3.5)
+
+═════════════════════════════════════════════════════════════════
