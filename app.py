@@ -199,6 +199,7 @@ def debug():
         <h2>Variáveis de Ambiente:</h2>
         <ul>
             <li>DATABASE_PATH: {os.environ.get('DATABASE_PATH', 'None')}</li>
+            <li>DB file exists: {os.path.exists(os.environ.get('DATABASE_PATH','') or os.path.join(os.path.dirname(__file__), 'database.db'))}</li>
             <li>Current dir: {os.getcwd()}</li>
         </ul>
         """
