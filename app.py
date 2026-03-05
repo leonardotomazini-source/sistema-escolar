@@ -33,15 +33,6 @@ def conectar():
 
 # Criar banco se não existir
 def criar_banco():
-    """FORÇAR RECRIAÇÃO COMPLETA DO BANCO - TEMPORÁRIO"""
-    import os
-    db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "database.db")
-
-    # REMOVER BANCO ANTIGO PARA FORÇAR RECRIAÇÃO
-    if os.path.exists(db_path):
-        os.remove(db_path)
-        print("Banco antigo removido - forçando recriação")
-
     conn = conectar()
     cursor = conn.cursor()
 
