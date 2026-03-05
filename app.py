@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 import sqlite3
+import os
 from datetime import datetime, timedelta
 from functools import wraps
 
@@ -21,7 +22,12 @@ def requer_admin(f):
     return decorated_function
 
 def conectar():
-    return sqlite3.connect("database.db")
+    """Conecta ao banco de dados com caminho absoluto"""
+    db_path = os.environ.get("DATABASE_PATH")
+    if not db_path:
+        base = os.path.dirname(os.path.abspath(__file__))
+        db_path = os.path.join(base, "database.db")
+    return sqlite3.connect(db_path)
 
 # Criar banco se não existir
 def criar_banco():
@@ -70,8 +76,28 @@ def criar_banco():
     if "conteudo" not in existing:
         cursor.execute("ALTER TABLE agendamentos ADD COLUMN conteudo TEXT NOT NULL DEFAULT ''")
 
+    # Inserir dados padrão se não existirem
+    cursor.execute("SELECT COUNT(*) FROM professores")
+    if cursor.fetchone()[0] == 0:
+        cursor.execute("INSERT INTO professores (nome) VALUES ('Professor Exemplo')")
+    
+    cursor.execute("SELECT COUNT(*) FROM disciplinas")
+    if cursor.fetchone()[0] == 0:
+        cursor.execute("INSERT INTO disciplinas (nome) VALUES ('Disciplina Exemplo')")
+
     conn.commit()
     conn.close()
+
+@app.before_request
+def init_db():
+    """Inicializa o banco na primeira requisição"""
+    if not hasattr(app, 'db_initialized'):
+        try:
+            criar_banco()
+            app.db_initialized = True
+        except Exception as e:
+            print(f"Erro ao inicializar banco: {e}")
+            app.db_initialized = True
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
