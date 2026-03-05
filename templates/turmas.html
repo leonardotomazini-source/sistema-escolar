@@ -4,12 +4,12 @@
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-12 col-md-8 col-lg-6">
-            <h2 class="text-center mb-4">Disciplinas</h2>
+            <h2 class="text-center mb-4">Turmas</h2>
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <form method="POST">
                         <div class="input-group">
-                            <input type="text" name="nome" class="form-control" placeholder="Nome da disciplina" required>
+                            <input type="text" name="nome" class="form-control" placeholder="Nome da turma (ex: 101 EF)" required>
                             <button class="btn btn-outline-primary" type="submit">Adicionar</button>
                         </div>
                     </form>
@@ -18,14 +18,14 @@
 
             <div class="card shadow-sm">
                 <div class="card-header">
-                    <h5 class="mb-0">Disciplinas Cadastradas</h5>
+                    <h5 class="mb-0">Turmas Cadastradas</h5>
                 </div>
                 <div class="list-group list-group-flush">
-                    {% for id,name in disciplinas %}
+                    {% for id,name in turmas %}
                         <div class="list-group-item d-flex justify-content-between align-items-center">
                             {{ name }}
-                            <form method="POST" action="{{ url_for('remover_disciplina', id=id) }}" class="d-inline"
-                                  onsubmit="return confirm('Tem certeza que deseja remover esta disciplina?')">
+                            <form method="POST" action="{{ url_for('remover_turma', id=id) }}" class="d-inline"
+                                  onsubmit="return confirm('Tem certeza que deseja remover esta turma?')">
                                 <button type="submit" class="btn btn-outline-danger btn-sm">Remover</button>
                             </form>
                         </div>

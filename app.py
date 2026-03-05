@@ -42,9 +42,9 @@ def criar_banco():
     )
     """)
 
-    # tabela de disciplinas
+    # tabela de turmas
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS disciplinas (
+    CREATE TABLE IF NOT EXISTS turmas (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL UNIQUE
     )
@@ -56,6 +56,7 @@ def criar_banco():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         professor_id INTEGER NOT NULL,
         disciplina_id INTEGER NOT NULL,
+        turma_id INTEGER NOT NULL,
         data TEXT NOT NULL,
         turno TEXT NOT NULL,
         periodo INTEGER NOT NULL,
@@ -69,6 +70,8 @@ def criar_banco():
     existing = [row[1] for row in cursor.fetchall()]
     if "disciplina_id" not in existing:
         cursor.execute("ALTER TABLE agendamentos ADD COLUMN disciplina_id INTEGER NOT NULL DEFAULT 0")
+    if "turma_id" not in existing:
+        cursor.execute("ALTER TABLE agendamentos ADD COLUMN turma_id INTEGER NOT NULL DEFAULT 0")
     if "turno" not in existing:
         cursor.execute("ALTER TABLE agendamentos ADD COLUMN turno TEXT NOT NULL DEFAULT 'matutino'")
     if "periodo" not in existing:
@@ -84,6 +87,22 @@ def criar_banco():
     cursor.execute("SELECT COUNT(*) FROM disciplinas")
     if cursor.fetchone()[0] == 0:
         cursor.execute("INSERT INTO disciplinas (nome) VALUES ('Disciplina Exemplo')")
+    
+    cursor.execute("SELECT COUNT(*) FROM turmas")
+    if cursor.fetchone()[0] == 0:
+        # Inserir todas as turmas
+        turmas = [
+            '101 EF', '102 EF', '201 EF', '202 EF', '203 EF',
+            '301 EF', '302 EF', '303 EF', '401 EF', '402 EF', '403 EF',
+            '501 EF', '502 EF', '503 EF', '504 EF', '601 EF', '602 EF',
+            '603 EF', '604 EF', '605 EF', '701 EF', '702 EF', '703 EF',
+            '704 EF', '705 EF', '801 EF', '802 EF', '803 EF', '804 EF',
+            '805 EF', '901 EF', '902 EF', '903 EF', '904 EF',
+            '101 EM', '102 EM', '103 EM', '104 EM', '105 EM', '106 EM',
+            '201 EM', '202 EM', '203 EM', '204 EM', '301 EM', '302 EM', '303 EM'
+        ]
+        for turma in turmas:
+            cursor.execute("INSERT INTO turmas (nome) VALUES (?)", (turma,))
 
     conn.commit()
     conn.close()
@@ -134,19 +153,20 @@ def agendar():
     if request.method == "POST":
         professor_id = request.form.get("professor")
         disciplina_id = request.form.get("disciplina")
+        turma_id = request.form.get("turma")
         data = request.form.get("data")
         turno = request.form.get("turno")
         periodo = request.form.get("periodo")
         conteudo = request.form.get("conteudo", "").strip()
 
-        if not all([professor_id, disciplina_id, data, turno, periodo, conteudo]):
+        if not all([professor_id, disciplina_id, turma_id, data, turno, periodo, conteudo]):
             flash("Todos os campos são obrigatórios", "danger")
             return redirect(url_for("agendar"))
 
         try:
             cursor.execute(
-                "INSERT INTO agendamentos (professor_id, disciplina_id, data, turno, periodo, conteudo) VALUES (?, ?, ?, ?, ?, ?)",
-                (professor_id, disciplina_id, data, turno, periodo, conteudo)
+                "INSERT INTO agendamentos (professor_id, disciplina_id, turma_id, data, turno, periodo, conteudo) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (professor_id, disciplina_id, turma_id, data, turno, periodo, conteudo)
             )
             conn.commit()
             flash("Agendamento realizado com sucesso!", "success")
@@ -160,8 +180,10 @@ def agendar():
     professores = cursor.fetchall()
     cursor.execute("SELECT id, nome FROM disciplinas ORDER BY nome")
     disciplinas = cursor.fetchall()
+    cursor.execute("SELECT id, nome FROM turmas ORDER BY nome")
+    turmas = cursor.fetchall()
     conn.close()
-    return render_template("agendar.html", professores=professores, disciplinas=disciplinas)
+    return render_template("agendar.html", professores=professores, disciplinas=disciplinas, turmas=turmas)
 
 @app.route("/professores", methods=["GET", "POST"])
 @requer_admin
@@ -223,10 +245,11 @@ def cancelar():
 
     cursor.execute(
         """
-        SELECT a.id, p.nome, d.nome, a.data, a.turno, a.periodo
+        SELECT a.id, p.nome, d.nome, t.nome, a.data, a.turno, a.periodo
         FROM agendamentos a
         JOIN professores p ON a.professor_id = p.id
         JOIN disciplinas d ON a.disciplina_id = d.id
+        JOIN turmas t ON a.turma_id = t.id
         ORDER BY a.data, a.turno, a.periodo
         """
     )
@@ -257,10 +280,11 @@ def relatorio():
 
     cursor.execute(
         """
-        SELECT a.id, p.nome, d.nome, a.data, a.turno, a.periodo, a.conteudo
+        SELECT a.id, p.nome, d.nome, t.nome, a.data, a.turno, a.periodo, a.conteudo
         FROM agendamentos a
         JOIN professores p ON a.professor_id = p.id
         JOIN disciplinas d ON a.disciplina_id = d.id
+        JOIN turmas t ON a.turma_id = t.id
         WHERE a.data BETWEEN ? AND ?
         ORDER BY a.data, a.turno, a.periodo
         """,
@@ -338,10 +362,11 @@ def agenda():
     # Busca agendamentos do mês
     cursor.execute(
         """
-        SELECT a.data, a.turno, a.periodo, p.nome, d.nome, a.conteudo
+        SELECT a.data, a.turno, a.periodo, p.nome, d.nome, t.nome, a.conteudo
         FROM agendamentos a
         JOIN professores p ON a.professor_id = p.id
         JOIN disciplinas d ON a.disciplina_id = d.id
+        JOIN turmas t ON a.turma_id = t.id
         WHERE a.data BETWEEN ? AND ?
         ORDER BY a.data, a.turno, a.periodo
         """,
@@ -352,7 +377,7 @@ def agenda():
     
     # Organiza por semana
     semanas = {}
-    for data, turno, periodo, prof, disc, conteudo in agendamentos:
+    for data, turno, periodo, prof, disc, turma, conteudo in agendamentos:
         date_obj = datetime.strptime(data, "%Y-%m-%d").date()
         weekday = date_obj.weekday()
         
@@ -378,6 +403,7 @@ def agenda():
             "periodo": periodo,
             "prof": prof,
             "disc": disc,
+            "turma": turma,
             "conteudo": conteudo,
             "cor": cor
         })
@@ -404,10 +430,11 @@ def professores_agenda():
     # Busca agendamentos do mês
     cursor.execute(
         """
-        SELECT a.data, a.turno, a.periodo, p.nome, d.nome, a.conteudo
+        SELECT a.data, a.turno, a.periodo, p.nome, d.nome, t.nome, a.conteudo
         FROM agendamentos a
         JOIN professores p ON a.professor_id = p.id
         JOIN disciplinas d ON a.disciplina_id = d.id
+        JOIN turmas t ON a.turma_id = t.id
         WHERE a.data BETWEEN ? AND ?
         ORDER BY a.data, a.turno, a.periodo
         """,
@@ -418,7 +445,7 @@ def professores_agenda():
     
     # Organiza por semana
     semanas = {}
-    for data, turno, periodo, prof, disc, conteudo in agendamentos:
+    for data, turno, periodo, prof, disc, turma, conteudo in agendamentos:
         date_obj = datetime.strptime(data, "%Y-%m-%d").date()
         weekday = date_obj.weekday()
         
@@ -444,11 +471,94 @@ def professores_agenda():
             "periodo": periodo,
             "prof": prof,
             "disc": disc,
+            "turma": turma,
             "conteudo": conteudo,
             "cor": cor
         })
     
     return render_template("professores_agenda.html", semanas=semanas, hoje=today)
+
+@app.route("/turmas", methods=["GET", "POST"])
+@requer_admin
+def gerenciar_turmas():
+    conn = conectar()
+    cursor = conn.cursor()
+
+    if request.method == "POST":
+        nome = request.form.get("nome", "").strip()
+        if nome:
+            try:
+                cursor.execute("INSERT INTO turmas (nome) VALUES (?)", (nome,))
+                conn.commit()
+                flash("Turma cadastrada com sucesso", "success")
+            except sqlite3.IntegrityError:
+                flash("Turma já existe", "warning")
+        return redirect(url_for("gerenciar_turmas"))
+
+    cursor.execute("SELECT id, nome FROM turmas ORDER BY nome")
+    turmas = cursor.fetchall()
+    conn.close()
+    return render_template("turmas.html", turmas=turmas)
+
+@app.route("/remover_professor/<int:id>", methods=["POST"])
+@requer_admin
+def remover_professor(id):
+    conn = conectar()
+    cursor = conn.cursor()
+    
+    # Verifica se o professor tem agendamentos
+    cursor.execute("SELECT COUNT(*) FROM agendamentos WHERE professor_id = ?", (id,))
+    count = cursor.fetchone()[0]
+    
+    if count > 0:
+        flash("Não é possível remover professor com agendamentos ativos", "danger")
+    else:
+        cursor.execute("DELETE FROM professores WHERE id = ?", (id,))
+        conn.commit()
+        flash("Professor removido com sucesso", "success")
+    
+    conn.close()
+    return redirect(url_for("gerenciar_professores"))
+
+@app.route("/remover_disciplina/<int:id>", methods=["POST"])
+@requer_admin
+def remover_disciplina(id):
+    conn = conectar()
+    cursor = conn.cursor()
+    
+    # Verifica se a disciplina tem agendamentos
+    cursor.execute("SELECT COUNT(*) FROM agendamentos WHERE disciplina_id = ?", (id,))
+    count = cursor.fetchone()[0]
+    
+    if count > 0:
+        flash("Não é possível remover disciplina com agendamentos ativos", "danger")
+    else:
+        cursor.execute("DELETE FROM disciplinas WHERE id = ?", (id,))
+        conn.commit()
+        flash("Disciplina removida com sucesso", "success")
+    
+    conn.close()
+    return redirect(url_for("gerenciar_disciplinas"))
+
+@app.route("/remover_turma/<int:id>", methods=["POST"])
+@requer_admin
+def remover_turma(id):
+    conn = conectar()
+    cursor = conn.cursor()
+    
+    # Verifica se a turma tem agendamentos
+    cursor.execute("SELECT COUNT(*) FROM agendamentos WHERE turma_id = ?", (id,))
+    count = cursor.fetchone()[0]
+    
+    if count > 0:
+        flash("Não é possível remover turma com agendamentos ativos", "danger")
+    else:
+        cursor.execute("DELETE FROM turmas WHERE id = ?", (id,))
+        conn.commit()
+        flash("Turma removida com sucesso", "success")
+    
+    conn.close()
+    return redirect(url_for("gerenciar_turmas"))
 
 if __name__ == "__main__":
     criar_banco()

@@ -1,16 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Professores</h2>
-<form method="POST" class="mb-3">
-    <div class="input-group">
-        <input type="text" name="nome" class="form-control" placeholder="Nome do professor" required>
-        <button class="btn btn-outline-primary" type="submit">Adicionar</button>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <h2 class="text-center mb-4">Professores</h2>
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="input-group">
+                            <input type="text" name="nome" class="form-control" placeholder="Nome do professor" required>
+                            <button class="btn btn-outline-primary" type="submit">Adicionar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Professores Cadastrados</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for id,name in professores %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ name }}
+                            <form method="POST" action="{{ url_for('remover_professor', id=id) }}" class="d-inline"
+                                  onsubmit="return confirm('Tem certeza que deseja remover este professor?')">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Remover</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
-</form>
-<ul class="list-group">
-    {% for id,name in professores %}
-        <li class="list-group-item">{{ name }}</li>
-    {% endfor %}
-</ul>
+</div>
 {% endblock %}

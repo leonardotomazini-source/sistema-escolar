@@ -1,27 +1,45 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Cancelar Agendamento</h2>
-<table class="table table-bordered">
-    <thead>
-        <tr><th>Data</th><th>Turno</th><th>Aula</th><th>Professor</th><th>Disciplina</th><th></th></tr>
-    </thead>
-    <tbody>
-        {% for id,prof,disc,data,turno,periodo in agendamentos %}
-        <tr>
-            <td>{{ data }}</td>
-            <td>{{ turno }}</td>
-            <td>{{ periodo }}ª</td>
-            <td>{{ prof }}</td>
-            <td>{{ disc }}</td>
-            <td>
-                <form method="POST" style="display:inline;">
-                    <input type="hidden" name="id" value="{{ id }}">
-                    <button class="btn btn-sm btn-danger" type="submit">Cancelar</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10">
+            <h2 class="text-center mb-4">Cancelar Agendamento</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Data</th>
+                            <th>Turno</th>
+                            <th>Aula</th>
+                            <th>Professor</th>
+                            <th>Disciplina</th>
+                            <th>Turma</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for id,prof,disc,turma,data,turno,periodo in agendamentos %}
+                        <tr>
+                            <td>{{ data }}</td>
+                            <td>{{ turno|title }}</td>
+                            <td>{{ periodo }}ª</td>
+                            <td>{{ prof }}</td>
+                            <td>{{ disc }}</td>
+                            <td><span class="badge bg-primary">{{ turma }}</span></td>
+                            <td>
+                                <form method="POST" style="display:inline;">
+                                    <input type="hidden" name="id" value="{{ id }}">
+                                    <button class="btn btn-sm btn-danger" type="submit"
+                                            onclick="return confirm('Tem certeza que deseja cancelar este agendamento?')">Cancelar</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
