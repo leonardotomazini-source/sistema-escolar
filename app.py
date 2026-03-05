@@ -23,10 +23,17 @@ def requer_admin(f):
     return decorated_function
 
 def conectar():
-    """Conecta ao banco de dados com caminho absoluto"""
+    """Conecta ao banco de dados. Use DATABASE_PATH para customizar o local.
+    Em produção (Render) monte um disco persistente e configure DATABASE_PATH
+    apontando para ele (por exemplo /persistent/database.db)."
     db_path = os.environ.get("DATABASE_PATH")
     if not db_path:
+        # padrão local: arquivo junto ao código (funciona em dev)
         db_path = os.path.join(os.path.dirname(__file__), "database.db")
+    # Garante diretório existe
+    directory = os.path.dirname(db_path)
+    if directory and not os.path.exists(directory):
+        os.makedirs(directory, exist_ok=True)
     return sqlite3.connect(db_path)
 
 # Criar banco se não existir
