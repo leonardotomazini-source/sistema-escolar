@@ -23,14 +23,24 @@ def requer_admin(f):
     return decorated_function
 
 def conectar():
-    """Conecta ao banco de dados. Use DATABASE_PATH para customizar o local.
-    Em produção (Render) monte um disco persistente e configure DATABASE_PATH
-    apontando para ele (por exemplo /persistent/database.db)."
+    """Abstrai a conexão com SQLite ou PostgreSQL.
+    - Se DATABASE_URL começar com "postgres", usa psycopg2.
+    - Caso contrário, usa um arquivo SQLite (DATABASE_PATH ou ./database.db).
+
+    No Render gratuito não há disco persistente, então o ideal é criar um
+    banco PostgreSQL gratuito (Render Postgres) e fornecer a URL via
+    DATABASE_URL. Uma vez configurado, dados e agendamentos persistirão para
+    sempre. """
+    # PostgreSQL via variáveis de ambiente
+    db_url = os.environ.get("DATABASE_URL")
+    if db_url and db_url.startswith("postgres"):
+        import psycopg2
+        return psycopg2.connect(db_url)
+
+    # SQLite fallback
     db_path = os.environ.get("DATABASE_PATH")
     if not db_path:
-        # padrão local: arquivo junto ao código (funciona em dev)
         db_path = os.path.join(os.path.dirname(__file__), "database.db")
-    # Garante diretório existe
     directory = os.path.dirname(db_path)
     if directory and not os.path.exists(directory):
         os.makedirs(directory, exist_ok=True)
