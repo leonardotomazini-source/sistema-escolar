@@ -8,7 +8,10 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11
-    databases:
-      - name: sistema-escolar-db
-        databaseName: sistema_escolar
-        user: sistema_escolar_user
+    databaseId: sistema-escolar-db
+
+databases:
+  - name: sistema-escolar-db
+    databaseName: sistema_escolar
+    user: sistema_escolar_user
+    ipAllowList: []
