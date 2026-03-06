@@ -33,9 +33,7 @@ def conectar():
         # PostgreSQL (usado no Render com banco persistente)
         try:
             import psycopg2
-            conn = psycopg2.connect(db_url)
-            # Retorna cursor com formato de dicionário para compatibilidade
-            return conn
+            return psycopg2.connect(db_url)
         except ImportError:
             print("psycopg2 não instalado. Usando SQLite fallback.")
             pass
@@ -49,69 +47,107 @@ def conectar():
         os.makedirs(directory, exist_ok=True)
     return sqlite3.connect(db_path)
 
+def get_db_type():
+    """Retorna o tipo de banco de dados sendo usado"""
+    db_url = os.environ.get("DATABASE_URL")
+    return "postgresql" if db_url else "sqlite"
+
 # Criar banco se não existir
 def criar_banco():
     conn = conectar()
     cursor = conn.cursor()
+    db_type = get_db_type()
 
-    # tabela de professores pré‑cadastrados
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS professores (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome TEXT NOT NULL UNIQUE
-    )
-    """
-    )
+    if db_type == "postgresql":
+        # PostgreSQL syntax
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS professores (
+            id SERIAL PRIMARY KEY,
+            nome TEXT NOT NULL UNIQUE
+        )
+        """)
 
-    # tabela de disciplinas
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS disciplinas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome TEXT NOT NULL UNIQUE
-    )
-    """
-    )
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS disciplinas (
+            id SERIAL PRIMARY KEY,
+            nome TEXT NOT NULL UNIQUE
+        )
+        """)
 
-    # tabela de turmas
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS turmas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome TEXT NOT NULL UNIQUE
-    )
-    """)
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS turmas (
+            id SERIAL PRIMARY KEY,
+            nome TEXT NOT NULL UNIQUE
+        )
+        """)
 
-    # agendamentos com turno, período e conteúdo
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS agendamentos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        professor_id INTEGER NOT NULL,
-        disciplina_id INTEGER NOT NULL,
-        turma_id INTEGER NOT NULL,
-        data TEXT NOT NULL,
-        turno TEXT NOT NULL,
-        periodo INTEGER NOT NULL,
-        conteudo TEXT NOT NULL,
-        UNIQUE(data, turno, periodo)
-    )
-    """)
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS agendamentos (
+            id SERIAL PRIMARY KEY,
+            professor_id INTEGER NOT NULL,
+            disciplina_id INTEGER NOT NULL,
+            turma_id INTEGER NOT NULL,
+            data TEXT NOT NULL,
+            turno TEXT NOT NULL,
+            periodo INTEGER NOT NULL,
+            conteudo TEXT NOT NULL,
+            UNIQUE(data, turno, periodo)
+        )
+        """)
+    else:
+        # SQLite syntax
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS professores (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL UNIQUE
+        )
+        """)
 
-    # caso a tabela já exista em formato antigo, adicionamos colunas necessárias (SQLite apenas)
-    try:
-        cursor.execute("PRAGMA table_info(agendamentos)")
-        existing = [row[1] for row in cursor.fetchall()]
-        if "disciplina_id" not in existing:
-            cursor.execute("ALTER TABLE agendamentos ADD COLUMN disciplina_id INTEGER NOT NULL DEFAULT 0")
-        if "turma_id" not in existing:
-            cursor.execute("ALTER TABLE agendamentos ADD COLUMN turma_id INTEGER NOT NULL DEFAULT 0")
-        if "turno" not in existing:
-            cursor.execute("ALTER TABLE agendamentos ADD COLUMN turno TEXT NOT NULL DEFAULT 'matutino'")
-        if "periodo" not in existing:
-            cursor.execute("ALTER TABLE agendamentos ADD COLUMN periodo INTEGER NOT NULL DEFAULT 1")
-        if "conteudo" not in existing:
-            cursor.execute("ALTER TABLE agendamentos ADD COLUMN conteudo TEXT NOT NULL DEFAULT ''")
-    except:
-        # PostgreSQL não suporta PRAGMA, mas tabelas já foram criadas assim
-        pass
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS disciplinas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL UNIQUE
+        )
+        """)
+
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS turmas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL UNIQUE
+        )
+        """)
+
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS agendamentos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            professor_id INTEGER NOT NULL,
+            disciplina_id INTEGER NOT NULL,
+            turma_id INTEGER NOT NULL,
+            data TEXT NOT NULL,
+            turno TEXT NOT NULL,
+            periodo INTEGER NOT NULL,
+            conteudo TEXT NOT NULL,
+            UNIQUE(data, turno, periodo)
+        )
+        """)
+
+        # caso a tabela já exista em formato antigo, adicionamos colunas necessárias (SQLite apenas)
+        try:
+            cursor.execute("PRAGMA table_info(agendamentos)")
+            existing = [row[1] for row in cursor.fetchall()]
+            if "disciplina_id" not in existing:
+                cursor.execute("ALTER TABLE agendamentos ADD COLUMN disciplina_id INTEGER NOT NULL DEFAULT 0")
+            if "turma_id" not in existing:
+                cursor.execute("ALTER TABLE agendamentos ADD COLUMN turma_id INTEGER NOT NULL DEFAULT 0")
+            if "turno" not in existing:
+                cursor.execute("ALTER TABLE agendamentos ADD COLUMN turno TEXT NOT NULL DEFAULT 'matutino'")
+            if "periodo" not in existing:
+                cursor.execute("ALTER TABLE agendamentos ADD COLUMN periodo INTEGER NOT NULL DEFAULT 1")
+            if "conteudo" not in existing:
+                cursor.execute("ALTER TABLE agendamentos ADD COLUMN conteudo TEXT NOT NULL DEFAULT ''")
+        except:
+            # PostgreSQL não suporta PRAGMA, mas tabelas já foram criadas assim
+            pass
 
     # Inserir dados padrão se não existirem
     cursor.execute("SELECT COUNT(*) FROM professores")

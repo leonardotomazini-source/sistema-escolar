@@ -24,6 +24,9 @@ wheels/
 .installed.cfg
 *.egg
 
+# Banco de dados local (SQLite)
+database.db
+
 # IDE
 .vscode/
 .idea/
