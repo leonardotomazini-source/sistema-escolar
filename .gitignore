@@ -27,6 +27,9 @@ wheels/
 # Banco de dados local (SQLite)
 database.db
 
+# Diretório duplicado
+sistema-escolar/
+
 # IDE
 .vscode/
 .idea/
